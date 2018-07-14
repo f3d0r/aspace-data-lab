@@ -21,41 +21,19 @@ map.on('mousemove', function (e) {
     var lat = e.lngLat.lat + "";
     lng = lng.substring(0, lng.indexOf('.') + 5);
     lat = lat.substring(0, lat.indexOf('.') + 5);
-    legend.innerHTML = "Mouse Lat/Lng: (" + lng + ", " + lat + ")";
+    legend.innerHTML = "Mouse Lng/Lat: (" + lng + ", " + lat + ")";
 });
 
 map.on('click', function (e) {
-    // if (firstMarker == null && secondMarker == null) {
-    //     firstMarker = new mapboxgl.Marker({
-    //             HTMLElement: "red_circle.svg"
-    //         })
-    //         .setLngLat(e.lngLat)
-    //         .setDraggable(true)
-    //         .addTo(map);
-    // } else if (firstMarker != null && secondMarker == null) {
-    //     secondMarker = new mapboxgl.Marker({
-    //             HTMLElement: "red_circle.svg"
-    //         })
-    //         .setLngLat(e.lngLat)
-    //         .setDraggable(true)
-    //         .addTo(map);
-    // } else if (firstMarker == null && secondMarker != null) {
-    //     firstMarker = new mapboxgl.Marker({
-    //             HTMLElement: "red_circle.svg"
-    //         })
-    //         .setLngLat(e.lngLat)
-    //         .setDraggable(true)
-    //         .addTo(map);
-    // } else {
-    //     alertify.error("Cannot place more points.");
-    // }
+    if (state == MODE.API_TEST_BBOX) {
+
+    }
 });
 
 map.on('zoomend', function(e) {
-    if (currentMode == MODE.API_TEST_BBOX) {
+    if (state == MODE.API_TEST_BBOX) {
 
     }
-    console.log(map.getZoom());
     // console.log(map.getBounds());
     // getBboxPoints(map.getBounds());
 });

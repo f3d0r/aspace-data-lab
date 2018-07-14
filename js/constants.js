@@ -2,13 +2,13 @@
 var mapbox = {
     access_token: 'pk.eyJ1IjoiYXNwYWNlLWluYyIsImEiOiJjamozNzlyZXgwdGIwM3dwY3h5bG01NXZoIn0._0LSy_8uB6ucL5NmXTSTtA',
     default_zoomin: [-122.32076559745069, 47.61561766959997],
-    zoom: 15,
+    zoom: 16,
     maxZoom: 18,
     minZoom: 12,
     feet_in_mile: 5280,
     theme_default: '***REMOVED***',
     theme_satellite: 'mapbox://styles/aspace-inc/cjjdqm85g5idu2qlm4xf3spl9',
-    theme_aspace: '***REMOVED***'
+    theme_aspace: 'mapbox://styles/aspace-inc/cjjkql9uz1id22smd44edtmpv'
 };
 
 // ASPACE CONSTANTS
@@ -28,5 +28,5 @@ var MODE = {
 }
 
 var strings = {
-    welcomeString: '<p>Welcome to the aspace Data Lab!</p><p>For a tutorial, click <a href=\"tutorial.html\">here</a>!</p>',
+    welcomeString: '<p>Welcome to the aspace Data Lab!</p><p>For a tutorial, click <a href="#">here</a>!</p>',
 }

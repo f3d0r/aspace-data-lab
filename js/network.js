@@ -60,3 +60,19 @@ function getRadiusPoints(originLatLng, radius_feet, callback) {
         callback(response);
     });
 }
+
+function getSpotsbyID(searchType, searchValue, callback) {
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://api.trya.space/v1/parking/get_status?" + searchType + "=" + searchValue,
+        "method": "GET",
+        "headers": {
+            "content-type": "application/json"
+        }
+    }
+
+    $.ajax(settings).done(function (response) {
+        callback(response);
+    });
+}

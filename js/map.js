@@ -1,8 +1,4 @@
-// <----------------------- INITIALIZATION ------------------------------------>
-
-// <----------------------- END INITIALIZATION ------------------------------------>
-
-// <----------------------- MAP NAVIGATION ------------------------------------>
+// <----------------------- END MAP NAVIGATION --------------------------->
 
 var drawControl;
 
@@ -32,15 +28,12 @@ function initMapControls() {
     });
 }
 
-// <----------------------- END MAP NAVIGATION ------------------------------------>
+// <----------------------- END MAP NAVIGATION --------------------------->
 
-// <----------------------- STATE ------------------------------------>
-var currentLiveFeed = false;
+// <----------------------- STATE ---------------------------------------->
 var serverMarkers;
-var firstMarker = null;
-var secondMarker = null;
-var editMode = false;
-var viewMode = true;
+
+var drawnStatuses = [];
 
 var state = MODE.NORMAL;
 
@@ -50,7 +43,7 @@ var state = MODE.NORMAL;
 var distanceContainer = document.getElementById('distance');
 var legend = document.getElementById('legend');
 
-// <----------------------- HTML INIT ------------------------------------>
+// <----------------------- END HTML INIT -------------------------------->
 
 function drawLine(startLngLat, endLngLat) {
     var positions = [
@@ -71,16 +64,8 @@ function drawLine(startLngLat, endLngLat) {
 }
 
 function clearMap() {
-    $.each(serverMarkers, function (i, marker) {
-        serverMarkers[i].remove();
-    });
-    if (firstMarker != null) {
-        firstMarker.remove();
-        firstMarker = null;
-    }
-    if (secondMarker != null) {
-        secondMarker.remove();
-        secondMarker = null;
+    while (drawnStatuses.length > 0) {
+        drawnStatuses.pop().remove();
     }
 }
 
@@ -93,11 +78,19 @@ function toggleSearch(enabled) {
     }
 }
 
+function toggleDrawTools(displayed) {
+    if (displayed) {
+        map.addControl(drawControl, 'bottom-right');
+    } else {
+        map.removeControl(drawControl);
+    }
+}
+
 function splitToPoints(blockId) {
-    var line = turf.lineString([
-        [firstMarker.getLngLat().lng, firstMarker.getLngLat().lat],
-        [secondMarker.getLngLat().lng, secondMarker.getLngLat().lat]
-    ]);
+    // var line = turf.lineString([
+    //     [firstMarker.getLngLat().lng, firstMarker.getLngLat().lat],
+    //     [secondMarker.getLngLat().lng, secondMarker.getLngLat().lat]
+    // ]);
 
     var chunk = turf.lineChunk(line, aspace.sensor_delta_feet / mapbox.feet_in_mile, {
         units: 'miles'
@@ -114,49 +107,30 @@ function splitToPoints(blockId) {
             data += "]";
         }
     }
-
-    console.log(data);
     uploadStrip(data, blockId);
 }
 
-function changeTheme(newThemeURL) {
-    map.setStyle(newThemeURL);
-}
-
-function apiBbox() {
-    currentMode = MODE.API_TEST_BBOX
-    toggleDrawTools(true);
-    var drawCircles = [];
-    getBboxPoints(map.getBounds(), function (spots) {
-        var geojson = getGeoJsonFromPoints(spots);
-
-        geojson.features.forEach(function (currentSpot) {
-            var el = document.createElement('div');
-            var occupancyStatus = currentSpot.properties.occupied;
-            if (occupancyStatus == 'F') {
-                el.className = 'marker-vacant';
-            } else if (occupancyStatus == 'T') {
-                el.className = 'marker-occupied';
-            } else {
-                el.className = 'marker-occupied';
-            }
-            new mapboxgl.Marker(el)
-                .setLngLat(currentSpot.geometry.coordinates)
-                .setPopup(new mapboxgl.Popup({
-                        offset: 25
-                    }) // add popups
-                    .setHTML('<h3>Spot ID: ' + currentSpot.properties.spot_id + '</h3><p>Block ID:' + currentSpot.properties.block_id + '</p><p>Occupied: ' + currentSpot.properties.occupied + '</p>'))
-                .addTo(map);
-        });
+function drawSpotsFromGeoJson(geojson) {
+    var markers = [];
+    geojson.features.forEach(function (currentSpot) {
+        var el = document.createElement('div');
+        var occupancyStatus = currentSpot.properties.occupied;
+        if (occupancyStatus == 'F') {
+            el.className = 'marker-vacant';
+        } else if (occupancyStatus == 'T') {
+            el.className = 'marker-occupied';
+        } else {
+            el.className = 'marker-occupied';
+        }
+        var currentMarker = new mapboxgl.Marker(el)
+            .setLngLat(currentSpot.geometry.coordinates)
+            .setPopup(new mapboxgl.Popup({
+                    offset: 25
+                }) // add popups
+                .setHTML('<h3>Spot ID: ' + currentSpot.properties.spot_id + '</h3><p>Block ID:' + currentSpot.properties.block_id + '</p><p>Occupied: ' + currentSpot.properties.occupied + '</p>'))
+            .addTo(map);
+        drawnStatuses.push(currentMarker);
     });
-}
-
-function toggleDrawTools(displayed) {
-    if (displayed) {
-        map.addControl(drawControl, 'bottom-right');
-    } else {
-        map.removeControl(drawControl);
-    }
 }
 
 function getGeoJsonFromPoints(spots) {
@@ -173,7 +147,6 @@ function getGeoJsonFromPoints(spots) {
         currentJson["geometry"].type = "Point";
         returnJson["features"].push(currentJson);
     });
-    console.log(returnJson);
     return returnJson;
 
 }

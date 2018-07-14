@@ -1,29 +1,9 @@
-$("#export").click(function () {
-    // exportFunction();
-});
-
-$("#start_point").click(function () {
-    if (firstMarker != null) {
-        firstMarker.remove();
-    }
-    firstMarker = null;
-});
-
-$("#end_point").click(function () {
-    if (secondMarker != null) {
-        secondMarker.remove();
-    }
-    secondMarker = null;
-});
-
 $("#draw_line").click(function () {
-    if (firstMarker != null && secondMarker != null) {
-        drawLine(firstMarker.getLngLat(), secondMarker.getLngLat());
-    }
+
 });
 
 $("#view_live_feed").click(function () {
-    currentLiveFeed = true;
+    mode = MODE.LIVE_FEED;
     alertify.message("Viewing live data feed.");
 });
 
@@ -32,95 +12,117 @@ $("#clear_map").click(function () {
 });
 
 $("#split_to_strip").click(function () {
-    if (firstMarker == null || secondMarker == null) {
-        alertify.error("Please select both points.");
-    } else {
-        alertify
-            .prompt("Please enter a block_id",
-                function (val, ev) {
-                    ev.preventDefault();
-                    checkBlockIdExists(val, function () {
-                        splitToPoints(val);
-                    });
-                },
-                function (ev) {
-                    ev.preventDefault();
-                    alertify.error("You've clicked Cancel");
-                }
-            );
-    }
+    // if (firstMarker == null || secondMarker == null) {
+    //     alertify.error("Please select both points.");
+    // } else {
+    alertify
+        .prompt("Please enter a block_id",
+            function (val, ev) {
+                ev.preventDefault();
+                checkBlockIdExists(val, function () {
+                    splitToPoints(val);
+                });
+            },
+            function (ev) {
+                ev.preventDefault();
+                alertify.error("You've clicked Cancel");
+            }
+        );
+    // }
 });
 
 $("#theme_default").click(function () {
-    changeTheme(mapbox.theme_default);
+    map.setStyle(mapbox.theme_default);
 });
 
 $("#theme_satellite").click(function () {
-    changeTheme(mapbox.theme_satellite);
+    map.setStyle(mapbox.theme_satellite);
 });
 
 $("#theme_aspace").click(function () {
-    changeTheme(mapbox.theme_aspace);
+    map.setStyle(mapbox.theme_aspace);
 });
 
 $("#api_bbox").click(function () {
-    apiBbox();
+    state = MODE.API_TEST_BBOX
+    toggleDrawTools(true);
+    var drawCircles = [];
+    getBboxPoints(map.getBounds(), function (spots) {
+        var geojson = getGeoJsonFromPoints(spots);
+        drawSpotsFromGeoJson(geojson);
+    });
 });
 
-var geojson = {
-    "type": "FeatureCollection",
-    "features": [{
-            "type": "Feature",
-            "properties": {
-                "message": "Foo",
-                "marker-symbol": "monument"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-66.324462890625, -16.024695711685304]
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "message": "Bar",
-                "marker-symbol": "monument"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-61.2158203125, -15.97189158092897]
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "message": "Baz",
-                "marker-symbol": "monument"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-63.29223632812499, -18.28151823530889]
-            }
-        }
-    ]
-};
-
 $("#api_radius").click(function () {
-    mode = MODE.API_TEST_RADIUS;
-    map.addSource('id', {
-        type: 'geojson',
-        data: geojson
+    clearMap();
+
+    state = MODE.API_TEST_RADIUS;
+
+    var mapCenter = map.getCenter();
+    var myCircle = new MapboxCircle({
+        lat: mapCenter.lat,
+        lng: mapCenter.lng
+    }, 100, {
+        editable: true,
+        minRadius: 1,
+        fillColor: '#29AB87'
+    }).addTo(map);
+    myCircle.on('contextmenu', function (mapMouseEvent) {
+        feetRadius = myCircle.getRadius() / 0.3048;
+        center = myCircle.getCenter();
+        getRadiusPoints(center, feetRadius, function (spots) {
+            var geojson = getGeoJsonFromPoints(spots);
+            drawSpotsFromGeoJson(geojson);
+            var bbox = turf.bbox(geojson);
+            map.fitBounds(bbox, {
+                padding: {
+                    top: 75,
+                    bottom: 50,
+                    left: 25,
+                    right: 25
+                }
+            });
+            myCircle.remove();
+        });
     });
-    // // add markers to map
-    // geojson.features.forEach(function (marker) {
+});
 
-    //     // create a HTML element for each feature
-    //     var el = document.createElement('div');
-    //     el.className = 'marker';
+$("#view_spot_id").click(function () {
+    clearMap();
+    alertify.prompt("Please enter the Spot ID you would like to view.", "Spot ID",
+        function (evt, value) {
+            getSpotsbyID('spot_id', value, function (spot) {
+                var geojson = getGeoJsonFromPoints(spot);
+                drawSpotsFromGeoJson(geojson);
+                map.flyTo({
+                    zoom: 18,
+                    center: [
+                        spot[0].lng,
+                        spot[0].lat,
+                    ]
+                });
+            });
+        }
+    );
+});
 
-    //     // make a marker for each feature and add to the map
-    //     new mapboxgl.Marker(el)
-    //         .setLngLat(marker.geometry.coordinates)
-    //         .addTo(map);
-    // });
+$("#view_block_id").click(function () {
+    clearMap();
+    alertify.prompt("Please enter the Block ID you would like to view.", "Block ID",
+        function (evt, value) {
+            getSpotsbyID('block_id', value, function (spot) {
+                var geojson = getGeoJsonFromPoints(spot);
+                var bbox = turf.bbox(geojson);
+                drawSpotsFromGeoJson(geojson);
+                map.fitBounds(bbox, {
+                    padding: {
+                        top: 75,
+                        bottom: 50,
+                        left: 25,
+                        right: 25
+                    }
+                });
+            });
+        }
+    );
 });
