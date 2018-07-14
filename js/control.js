@@ -48,7 +48,6 @@ $("#theme_aspace").click(function () {
 $("#api_bbox").click(function () {
     changeMode('API_TEST_BBOX');
     clearMap();
-    toggleDrawTools(true);
     // getBboxPoints(map.getBounds(), function (spots) {
     //     var geojson = getGeoJsonFromPoints(spots);
     //     drawSpotsFromGeoJson(geojson);
@@ -138,4 +137,12 @@ $("#view_block_id").click(function () {
             });
         }
     );
+});
+
+$("#create_individual_spot").click(function () {
+    changeMode('CREATE_DATA_BY_SPOT');
+});
+
+$("#create_spot_strip").click(function () {
+    changeMode('CREATE_DATA_BY_STRIP');
 });

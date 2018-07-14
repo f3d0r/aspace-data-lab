@@ -12,11 +12,11 @@ var map = new mapboxgl.Map({
 
 map.on('load', function () {
     initMapControls();
-    changeMode('NORMAL');
-    alertify.success(strings.welcomeString);
     updateMouseLatLng({
         lngLat: map.getCenter()
     });
+    changeMode('NORMAL');
+    alertify.success(strings.welcomeString);
 });
 
 map.on('mousemove', function (e) {

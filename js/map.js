@@ -181,14 +181,23 @@ function getGeoJsonFromPoints(spots) {
 }
 
 function changeMode(newMode) {
-    currentClickedSpotID = null;
+    if (currentMode == MODE.CREATE_DATA_BY_SPOT || currentMode == MODE.CREATE_DATA_BY_STRIP || currentMode == MODE.API_TEST_BBOX) {
+        toggleDrawTools(false);
+    }
+
     currentClickedSpotIDText = null;
-    
+    currentClickedSpotID = null;
+
     clearMap();
-    
-    if (newMode != MODE.LIVE_FEED) {
+
+    if (newMode != 'LIVE_FEED') {
         clearInterval(repeatRefresh);
     }
+
+    if (newMode == 'CREATE_DATA_BY_SPOT' || newMode == 'CREATE_DATA_BY_STRIP' || newMode == 'API_TEST_BBOX') {
+        toggleDrawTools(true);
+    }
+
     currentMode = MODE[newMode];
     mode.innerHTML = strings[newMode];
     mode.style.backgroundColor = colors[newMode];
