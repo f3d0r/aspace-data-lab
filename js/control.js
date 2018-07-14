@@ -1,9 +1,5 @@
-$("#draw_line").click(function () {
-
-});
-
 $("#view_live_feed").click(function () {
-    mode = MODE.LIVE_FEED;
+    changeMode('LIVE_FEED');
     alertify.message("Viewing live data feed.");
 });
 
@@ -44,9 +40,9 @@ $("#theme_aspace").click(function () {
 });
 
 $("#api_bbox").click(function () {
+    changeMode('API_TEST_BBOX');
+    clearMap();
     state = MODE.API_TEST_BBOX
-    toggleDrawTools(true);
-    var drawCircles = [];
     getBboxPoints(map.getBounds(), function (spots) {
         var geojson = getGeoJsonFromPoints(spots);
         drawSpotsFromGeoJson(geojson);
@@ -54,6 +50,7 @@ $("#api_bbox").click(function () {
 });
 
 $("#api_radius").click(function () {
+    changeMode('API_TEST_RADIUS');
     clearMap();
 
     state = MODE.API_TEST_RADIUS;
@@ -88,40 +85,50 @@ $("#api_radius").click(function () {
 });
 
 $("#view_spot_id").click(function () {
+    changeMode('API_TEST_VIEW_SPOT_STATUS');
     clearMap();
     alertify.prompt("Please enter the Spot ID you would like to view.", "Spot ID",
         function (evt, value) {
             getSpotsbyID('spot_id', value, function (spot) {
-                var geojson = getGeoJsonFromPoints(spot);
-                drawSpotsFromGeoJson(geojson);
-                map.flyTo({
-                    zoom: 18,
-                    center: [
-                        spot[0].lng,
-                        spot[0].lat,
-                    ]
-                });
+                if (spot.length == 0) {
+                    alertify.error('Invalid Block ID');
+                } else {
+                    var geojson = getGeoJsonFromPoints(spot);
+                    drawSpotsFromGeoJson(geojson);
+                    map.flyTo({
+                        zoom: 18,
+                        center: [
+                            spot[0].lng,
+                            spot[0].lat,
+                        ]
+                    });
+                }
             });
         }
     );
 });
 
 $("#view_block_id").click(function () {
+    changeMode('API_TEST_VIEW_BLOCK_STATUS');
     clearMap();
     alertify.prompt("Please enter the Block ID you would like to view.", "Block ID",
         function (evt, value) {
-            getSpotsbyID('block_id', value, function (spot) {
-                var geojson = getGeoJsonFromPoints(spot);
-                var bbox = turf.bbox(geojson);
-                drawSpotsFromGeoJson(geojson);
-                map.fitBounds(bbox, {
-                    padding: {
-                        top: 75,
-                        bottom: 50,
-                        left: 25,
-                        right: 25
-                    }
-                });
+            getSpotsbyID('block_id', value, function (spots) {
+                if (spots.length == 0) {
+                    alertify.error('Invalid Block ID');
+                } else {
+                    var geojson = getGeoJsonFromPoints(spots);
+                    var bbox = turf.bbox(geojson);
+                    drawSpotsFromGeoJson(geojson);
+                    map.fitBounds(bbox, {
+                        padding: {
+                            top: 75,
+                            bottom: 50,
+                            left: 25,
+                            right: 25
+                        }
+                    });
+                }
             });
         }
     );

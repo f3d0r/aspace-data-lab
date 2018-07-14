@@ -13,7 +13,8 @@ var mapbox = {
 
 // ASPACE CONSTANTS
 var aspace = {
-    sensor_delta_feet: 2
+    sensor_delta_feet: 2,
+    auth_key: '***REMOVED***'
 };
 
 var MODE = {
@@ -29,4 +30,23 @@ var MODE = {
 
 var strings = {
     welcomeString: '<p>Welcome to the aspace Data Lab!</p><p>For a tutorial, click <a href="#">here</a>!</p>',
+    NORMAL: "Normal",
+    CREATE_DATA_BY_SPOT: "Creating Individual Spot Data",
+    CREATE_DATA_BY_STRIP: "Create Block Data",
+    LIVE_FEED: "Viewing Live Data",
+    API_TEST_RADIUS: "Testing API Radius Search Method",
+    API_TEST_BBOX: "Testing API BBox Method",
+    API_TEST_VIEW_BLOCK_STATUS: "Viewing Block Status",
+    API_TEST_VIEW_SPOT_STATUS: "Viewing Spot Status"
+}
+
+var colors = {
+    NORMAL: "lawngreen",
+    CREATE_DATA_BY_SPOT: "red",
+    CREATE_DATA_BY_STRIP: "red",
+    LIVE_FEED: "lawngreen",
+    API_TEST_RADIUS: "yellow",
+    API_TEST_BBOX: "yellow",
+    API_TEST_VIEW_BLOCK_STATUS: "yellow",
+    API_TEST_VIEW_SPOT_STATUS: "yellow"
 }

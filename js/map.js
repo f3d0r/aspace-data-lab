@@ -35,13 +35,16 @@ var serverMarkers;
 
 var drawnStatuses = [];
 
-var state = MODE.NORMAL;
+var currentVisibleMarkerPopup;
+
+var currentMode;
 
 // <----------------------- END STATE ------------------------------------>
 
 // <----------------------- HTML INIT ------------------------------------>
 var distanceContainer = document.getElementById('distance');
 var legend = document.getElementById('legend');
+var mode = document.getElementById('mode');
 
 // <----------------------- END HTML INIT -------------------------------->
 
@@ -115,21 +118,60 @@ function drawSpotsFromGeoJson(geojson) {
     geojson.features.forEach(function (currentSpot) {
         var el = document.createElement('div');
         var occupancyStatus = currentSpot.properties.occupied;
+        var oppositeStatus;
         if (occupancyStatus == 'F') {
             el.className = 'marker-vacant';
+            oppositeStatus = 'T';
         } else if (occupancyStatus == 'T') {
             el.className = 'marker-occupied';
+            oppositeStatus = 'F';
         } else {
-            el.className = 'marker-occupied';
+            el.className = 'marker-notavailable';
+            oppositeStatus = 'N';
         }
+        // var switchStatusText = "Change 'occupied' to '" + oppositeStatus + "'";
+        var onClickFunction = "switchSpotStatus(" + currentSpot.properties.spot_id + ', ' + 'document.getElementById(\'newStatus\').value);';
+        var html = '<h3>Spot ID: ' + currentSpot.properties.spot_id + ' // Block ID: ' + currentSpot.properties.block_id + '</h3>' +
+            '<p>Occupied: ' + currentSpot.properties.occupied + '</p>' +
+            '<p>New Status: <input type="text" id="newStatus"><button type="submit" value="Update Status"onclick="' + onClickFunction + '">Submit</button></p>';
+        // '<button type="button" id="myBtn" onclick="' + onClickFunction + '">' + switchStatusText + '</button>';
         var currentMarker = new mapboxgl.Marker(el)
             .setLngLat(currentSpot.geometry.coordinates)
             .setPopup(new mapboxgl.Popup({
-                    offset: 25
-                }) // add popups
-                .setHTML('<h3>Spot ID: ' + currentSpot.properties.spot_id + '</h3><p>Block ID:' + currentSpot.properties.block_id + '</p><p>Occupied: ' + currentSpot.properties.occupied + '</p>'))
+                    offset: 15
+                })
+                .setHTML(html))
             .addTo(map);
+        el.addEventListener('click', () => {
+            currentVisibleMarkerPopup = currentMarker;
+            map.flyTo({
+                zoom: 18,
+                center: [
+                    currentSpot.properties.lng,
+                    currentSpot.properties.lat,
+                ]
+            });
+            console.log(html);
+        });
+
         drawnStatuses.push(currentMarker);
+    });
+}
+
+function switchSpotStatus(spotId, newStatus) {
+    console.log(spotId + ", " + newStatus);
+    updateSpotStatus(spotId, newStatus, function (response) {
+        if (response.error.error_code != 19) {
+            alertify.error('The spot status could not be changed.');
+        } else {
+            alertify.success('Spot ID ' + spotId + " status changed to '" + newStatus + "'.");
+            currentVisibleMarkerPopup.togglePopup();
+            getBboxPoints(map.getBounds(), function (spots) {
+                clearMap();
+                var geojson = getGeoJsonFromPoints(spots);
+                drawSpotsFromGeoJson(geojson);
+            });
+        }
     });
 }
 
@@ -148,5 +190,10 @@ function getGeoJsonFromPoints(spots) {
         returnJson["features"].push(currentJson);
     });
     return returnJson;
+}
 
+function changeMode(newMode) {
+    currentMode = MODE[newMode];
+    mode.innerHTML = strings[newMode];
+    mode.style.backgroundColor = colors[newMode];
 }

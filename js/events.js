@@ -12,6 +12,7 @@ var map = new mapboxgl.Map({
 
 map.on('load', function () {
     initMapControls();
+    changeMode('NORMAL');
     // Add styles to the map
     alertify.success(strings.welcomeString);
 });
@@ -31,9 +32,15 @@ map.on('click', function (e) {
 });
 
 map.on('zoomend', function(e) {
-    if (state == MODE.API_TEST_BBOX) {
+    if (currentMode == MODE.API_TEST_BBOX) {
 
     }
     // console.log(map.getBounds());
     // getBboxPoints(map.getBounds());
+});
+
+map.on('moveend', function(e) {
+    if (currentMode == MODE.LIVE_FEED) {
+        refreshData();
+    }
 });

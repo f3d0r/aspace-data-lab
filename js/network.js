@@ -76,3 +76,17 @@ function getSpotsbyID(searchType, searchValue, callback) {
         callback(response);
     });
 }
+
+function updateSpotStatus(spotId, newStatus, callback) {
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://api.trya.space/v1/parking/update_status?auth_key=" + aspace.auth_key + "&spot_id=" + spotId + "&occupied=" + newStatus,
+        "method": "POST",
+        "headers": {}
+    }
+
+    $.ajax(settings).done(function (response) {
+        callback(response);
+    });
+}
