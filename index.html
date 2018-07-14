@@ -1,0 +1,114 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <title>aspace, Inc - Data Lab</title>
+  <link rel="shortcut icon" type="image/png" href="assets/favicon.png" />
+
+
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.css' type='text/css'
+  />
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css'
+    type='text/css' />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/alertify.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/themes/default.min.css">
+
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.js'></script>
+  <script src='https://npmcdn.com/mapbox-gl-circle/dist/mapbox-gl-circle.min.js'></script>
+
+</head>
+
+<body>
+
+  <div id='legend' class='legend'></div>
+
+  <div id='map' class='map'> </div>
+
+  <div class="navbar">
+    <a href="https://lab.trya.space">Home</a>
+    <div class="dropdown">
+      <button class="dropbtn">View
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#" id="clear_map">Clear Map</a>
+        <a href="#" id="view_live_feed">Live Feed</a>
+        <a href="#" id="export">Create Data</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn">Info
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#" id="clear_map">Spot ID Info</a>
+        <a href="#" id="view_live_feed">Live Feed</a>
+        <a href="#" id="export">Create Data</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn">Theme
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#" id="theme_default">Default</a>
+        <a href="#" id="theme_satellite">Satellite</a>
+        <a href="#" id="theme_aspace">ASPACE!</a>
+      </div>
+    </div>
+    <div class="dropdown ">
+      <button class="dropbtn">API Test
+        <i class="fa fa-caret-down "></i>
+      </button>
+      <div class="dropdown-content ">
+        <a href="# " id="api_bbox">Bounding Box</a>
+        <a href="# " id="api_radius">Radius</a>
+      </div>
+    </div>
+    <div class="dropdown ">
+      <button class="dropbtn ">Points
+        <i class="fa fa-caret-down "></i>
+      </button>
+      <div class="dropdown-content ">
+        <a href="#" id="start_point ">Remove Start Point</a>
+        <a href="#" id="end_point ">Remove End Point</a>
+      </div>
+    </div>
+    <div class="dropdown ">
+      <button class="dropbtn ">Draw
+        <i class="fa fa-caret-down "></i>
+      </button>
+      <div class="dropdown-content ">
+        <a href="#" id="split_to_strip">Split to strip</a>
+      </div>
+    </div>
+    <div class="dropdown ">
+      <button class="dropbtn ">Mode
+        <i class="fa fa-caret-down "></i>
+      </button>
+      <div class="dropdown-content ">
+        <a href="#" id="edit_mode">Editor</a>
+        <a href="#" id="view_mode">Viewer</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<script type="text/javascript " src="js/constants.js "></script>
+<script type="text/javascript " src="js/events.js "></script>
+<script type="text/javascript " src="js/network.js "></script>
+<script type="text/javascript " src="js/map.js "></script>
+<script type="text/javascript " src="js/control.js "></script>
+<script type="text/javascript " src="js/alertify.min.js "></script>
+
+</html>
