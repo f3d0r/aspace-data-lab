@@ -13,16 +13,14 @@ var map = new mapboxgl.Map({
 map.on('load', function () {
     initMapControls();
     changeMode('NORMAL');
-    // Add styles to the map
     alertify.success(strings.welcomeString);
+    updateMouseLatLng({
+        lngLat: map.getCenter()
+    });
 });
 
 map.on('mousemove', function (e) {
-    var lng = e.lngLat.lng + "";
-    var lat = e.lngLat.lat + "";
-    lng = lng.substring(0, lng.indexOf('.') + 5);
-    lat = lat.substring(0, lat.indexOf('.') + 5);
-    legend.innerHTML = "Mouse Lng/Lat: (" + lng + ", " + lat + ")";
+    updateMouseLatLng(e);
 });
 
 map.on('click', function (e) {

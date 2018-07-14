@@ -1,17 +1,16 @@
 var repeatRefresh;
 
+$("#view_normal").click(function () {
+    changeMode('NORMAL');
+});
+
 $("#view_live_feed").click(function () {
     changeMode('LIVE_FEED');
-    alertify.message("Viewing live data feed.");
 
     refreshData();
     repeatRefresh = setInterval(function () {
         refreshData();
     }, aspace.refresh_interval_milli);
-});
-
-$("#clear_map").click(function () {
-    clearMap();
 });
 
 $("#split_to_strip").click(function () {

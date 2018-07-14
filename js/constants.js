@@ -31,10 +31,10 @@ var MODE = {
 
 var strings = {
     welcomeString: '<p>Welcome to the aspace Data Lab!</p><p>For a tutorial, click <a href="#">here</a>!</p>',
-    NORMAL: "Normal",
+    NORMAL: "Normal Mode",
     CREATE_DATA_BY_SPOT: "Creating Individual Spot Data",
     CREATE_DATA_BY_STRIP: "Create Block Data",
-    LIVE_FEED: "Viewing Live Data",
+    LIVE_FEED: "Viewing Live Data Feed",
     API_TEST_RADIUS: "Testing API Radius Search Method",
     API_TEST_BBOX: "Testing API BBox Method",
     API_TEST_VIEW_BLOCK_STATUS: "Viewing Block Status",

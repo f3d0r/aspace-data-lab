@@ -123,7 +123,7 @@ function drawSpotsFromGeoJson(geojson, currentSpotIDPopup) {
             .setLngLat(currentSpot.geometry.coordinates)
             .setPopup(popup)
             .addTo(map);
-        if ((currentSpotIDPopup != null && currentClickedSpotID != 'undefined') && currentSpotIDPopup == currentSpot.properties.spot_id) {
+        if (currentSpotIDPopup != null && currentSpotIDPopup == currentSpot.properties.spot_id) {
             currentMarker.togglePopup();
             document.getElementById("newStatus").focus();
             if (currentClickedSpotIDText != null) {
@@ -181,12 +181,19 @@ function getGeoJsonFromPoints(spots) {
 }
 
 function changeMode(newMode) {
+    currentClickedSpotID = null;
+    currentClickedSpotIDText = null;
+    
+    clearMap();
+    
     if (newMode != MODE.LIVE_FEED) {
         clearInterval(repeatRefresh);
     }
     currentMode = MODE[newMode];
     mode.innerHTML = strings[newMode];
     mode.style.backgroundColor = colors[newMode];
+
+    alertify.message(strings[newMode]);
 }
 
 function refreshData() {
@@ -195,4 +202,12 @@ function refreshData() {
         var geojson = getGeoJsonFromPoints(spots);
         drawSpotsFromGeoJson(geojson, currentClickedSpotID);
     });
+}
+
+function updateMouseLatLng(e) {
+    var lng = e.lngLat.lng + "";
+    var lat = e.lngLat.lat + "";
+    lng = lng.substring(0, lng.indexOf('.') + 5);
+    lat = lat.substring(0, lat.indexOf('.') + 5);
+    legend.innerHTML = "Mouse Lng/Lat: (" + lng + ", " + lat + ")";
 }
