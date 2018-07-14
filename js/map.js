@@ -21,6 +21,7 @@ function initMapControls() {
     }), 'bottom-left');
     drawControl = new MapboxDraw({
         displayControlsDefault: false,
+        default_mode: 'draw_polygon',
         controls: {
             polygon: true,
             trash: true
@@ -35,7 +36,8 @@ var serverMarkers;
 
 var drawnStatuses = [];
 
-var currentVisibleMarkerPopup;
+var currentClickedSpotID = null;
+var currentClickedSpotIDText = null;
 
 var currentMode;
 
@@ -47,24 +49,6 @@ var legend = document.getElementById('legend');
 var mode = document.getElementById('mode');
 
 // <----------------------- END HTML INIT -------------------------------->
-
-function drawLine(startLngLat, endLngLat) {
-    var positions = [
-        [startLngLat.lng, startLngLat.lat],
-        [endLngLat.lng, endLngLat.lat]
-    ];
-
-    var line =
-        map.addLayer({
-            "id": "point",
-            "type": "circle",
-            "source": "point",
-            "paint": {
-                "circle-radius": 10,
-                "circle-color": "#3887be"
-            }
-        });
-}
 
 function clearMap() {
     while (drawnStatuses.length > 0) {
@@ -83,7 +67,7 @@ function toggleSearch(enabled) {
 
 function toggleDrawTools(displayed) {
     if (displayed) {
-        map.addControl(drawControl, 'bottom-right');
+        map.addControl(drawControl, 'bottom-left');
     } else {
         map.removeControl(drawControl);
     }
@@ -113,37 +97,41 @@ function splitToPoints(blockId) {
     uploadStrip(data, blockId);
 }
 
-function drawSpotsFromGeoJson(geojson) {
+function drawSpotsFromGeoJson(geojson, currentSpotIDPopup) {
     var markers = [];
     geojson.features.forEach(function (currentSpot) {
         var el = document.createElement('div');
         var occupancyStatus = currentSpot.properties.occupied;
-        var oppositeStatus;
         if (occupancyStatus == 'F') {
             el.className = 'marker-vacant';
-            oppositeStatus = 'T';
         } else if (occupancyStatus == 'T') {
             el.className = 'marker-occupied';
-            oppositeStatus = 'F';
         } else {
             el.className = 'marker-notavailable';
-            oppositeStatus = 'N';
         }
-        // var switchStatusText = "Change 'occupied' to '" + oppositeStatus + "'";
         var onClickFunction = "switchSpotStatus(" + currentSpot.properties.spot_id + ', ' + 'document.getElementById(\'newStatus\').value);';
         var html = '<h3>Spot ID: ' + currentSpot.properties.spot_id + ' // Block ID: ' + currentSpot.properties.block_id + '</h3>' +
             '<p>Occupied: ' + currentSpot.properties.occupied + '</p>' +
-            '<p>New Status: <input type="text" id="newStatus"><button type="submit" value="Update Status"onclick="' + onClickFunction + '">Submit</button></p>';
-        // '<button type="button" id="myBtn" onclick="' + onClickFunction + '">' + switchStatusText + '</button>';
+            '<p>New Status: <input type="text" id="newStatus"' +
+            'onchange="inputTextChange(' + currentSpot.properties.spot_id + ', document.getElementById(\'newStatus\').value);">' +
+            '<button type="submit" value="Update Status" onclick="' + onClickFunction + '">Submit</button></p>';
+        var popup = new mapboxgl.Popup({
+                offset: 15
+            })
+            .setHTML(html);
         var currentMarker = new mapboxgl.Marker(el)
             .setLngLat(currentSpot.geometry.coordinates)
-            .setPopup(new mapboxgl.Popup({
-                    offset: 15
-                })
-                .setHTML(html))
+            .setPopup(popup)
             .addTo(map);
+        if ((currentSpotIDPopup != null && currentClickedSpotID != 'undefined') && currentSpotIDPopup == currentSpot.properties.spot_id) {
+            currentMarker.togglePopup();
+            document.getElementById("newStatus").focus();
+            if (currentClickedSpotIDText != null) {
+                document.getElementById("newStatus").value = currentClickedSpotIDText;
+            }
+        }
         el.addEventListener('click', () => {
-            currentVisibleMarkerPopup = currentMarker;
+            currentClickedSpotID = currentSpot.properties.spot_id;
             map.flyTo({
                 zoom: 18,
                 center: [
@@ -151,25 +139,25 @@ function drawSpotsFromGeoJson(geojson) {
                     currentSpot.properties.lat,
                 ]
             });
-            console.log(html);
         });
-
         drawnStatuses.push(currentMarker);
     });
 }
 
+function inputTextChange(spot_id, newText) {
+    currentClickedSpotIDText = newText;
+}
+
 function switchSpotStatus(spotId, newStatus) {
-    console.log(spotId + ", " + newStatus);
     updateSpotStatus(spotId, newStatus, function (response) {
         if (response.error.error_code != 19) {
             alertify.error('The spot status could not be changed.');
         } else {
             alertify.success('Spot ID ' + spotId + " status changed to '" + newStatus + "'.");
-            currentVisibleMarkerPopup.togglePopup();
             getBboxPoints(map.getBounds(), function (spots) {
                 clearMap();
                 var geojson = getGeoJsonFromPoints(spots);
-                drawSpotsFromGeoJson(geojson);
+                drawSpotsFromGeoJson(geojson, currentClickedSpotID);
             });
         }
     });
@@ -193,7 +181,18 @@ function getGeoJsonFromPoints(spots) {
 }
 
 function changeMode(newMode) {
+    if (newMode != MODE.LIVE_FEED) {
+        clearInterval(repeatRefresh);
+    }
     currentMode = MODE[newMode];
     mode.innerHTML = strings[newMode];
     mode.style.backgroundColor = colors[newMode];
+}
+
+function refreshData() {
+    getBboxPoints(map.getBounds(), function (spots) {
+        clearMap();
+        var geojson = getGeoJsonFromPoints(spots);
+        drawSpotsFromGeoJson(geojson, currentClickedSpotID);
+    });
 }

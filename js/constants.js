@@ -14,7 +14,8 @@ var mapbox = {
 // ASPACE CONSTANTS
 var aspace = {
     sensor_delta_feet: 2,
-    auth_key: '***REMOVED***'
+    auth_key: '***REMOVED***',
+    refresh_interval_milli: 2000
 };
 
 var MODE = {

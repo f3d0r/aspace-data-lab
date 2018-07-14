@@ -26,12 +26,13 @@ map.on('mousemove', function (e) {
 });
 
 map.on('click', function (e) {
-    if (state == MODE.API_TEST_BBOX) {
+    console.log("MAP CLICKED!");
+    if (currentMode == MODE.API_TEST_BBOX) {
 
     }
 });
 
-map.on('zoomend', function(e) {
+map.on('zoomend', function (e) {
     if (currentMode == MODE.API_TEST_BBOX) {
 
     }
@@ -39,8 +40,50 @@ map.on('zoomend', function(e) {
     // getBboxPoints(map.getBounds());
 });
 
-map.on('moveend', function(e) {
+map.on('moveend', function (e) {
     if (currentMode == MODE.LIVE_FEED) {
         refreshData();
     }
 });
+
+map.on('draw.create', glDrawCreate);
+map.on('draw.update', glDrawUpdate)
+
+function glDrawCreate(e) {
+    var data = drawControl.getAll();
+    var bbox = turf.bbox(data);
+    // drawControl.deleteAll();
+    drawControl.set({
+        type: 'FeatureCollection',
+        features: [{
+            type: 'Feature',
+            properties: {},
+            id: 'example-id',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [bbox[0], bbox[1]],
+                        [bbox[0], bbox[3]],
+                        [bbox[2], bbox[3]],
+                        [bbox[2], bbox[1]],
+                        [bbox[0], bbox[1]]
+                    ]
+                ]
+            }
+        }]
+    });
+    map.fitBounds(bbox, {
+        padding: {
+            top: 150,
+            bottom: 125,
+            left: 25,
+            right: 25
+        }
+    });
+}
+
+function glDrawUpdate(e) {
+    alertify.dismissAll();
+    alertify.message("Press <a onclick=\"glDrawCreate();\" href=\"#\">here</a> to re-size the bounding box.");
+}

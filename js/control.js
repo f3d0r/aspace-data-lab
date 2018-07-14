@@ -1,6 +1,13 @@
+var repeatRefresh;
+
 $("#view_live_feed").click(function () {
     changeMode('LIVE_FEED');
     alertify.message("Viewing live data feed.");
+
+    refreshData();
+    repeatRefresh = setInterval(function () {
+        refreshData();
+    }, aspace.refresh_interval_milli);
 });
 
 $("#clear_map").click(function () {
@@ -42,11 +49,11 @@ $("#theme_aspace").click(function () {
 $("#api_bbox").click(function () {
     changeMode('API_TEST_BBOX');
     clearMap();
-    state = MODE.API_TEST_BBOX
-    getBboxPoints(map.getBounds(), function (spots) {
-        var geojson = getGeoJsonFromPoints(spots);
-        drawSpotsFromGeoJson(geojson);
-    });
+    toggleDrawTools(true);
+    // getBboxPoints(map.getBounds(), function (spots) {
+    //     var geojson = getGeoJsonFromPoints(spots);
+    //     drawSpotsFromGeoJson(geojson);
+    // });
 });
 
 $("#api_radius").click(function () {
@@ -69,7 +76,7 @@ $("#api_radius").click(function () {
         center = myCircle.getCenter();
         getRadiusPoints(center, feetRadius, function (spots) {
             var geojson = getGeoJsonFromPoints(spots);
-            drawSpotsFromGeoJson(geojson);
+            drawSpotsFromGeoJson(geojson, null);
             var bbox = turf.bbox(geojson);
             map.fitBounds(bbox, {
                 padding: {
@@ -94,7 +101,7 @@ $("#view_spot_id").click(function () {
                     alertify.error('Invalid Block ID');
                 } else {
                     var geojson = getGeoJsonFromPoints(spot);
-                    drawSpotsFromGeoJson(geojson);
+                    drawSpotsFromGeoJson(geojson, null);
                     map.flyTo({
                         zoom: 18,
                         center: [
@@ -119,7 +126,7 @@ $("#view_block_id").click(function () {
                 } else {
                     var geojson = getGeoJsonFromPoints(spots);
                     var bbox = turf.bbox(geojson);
-                    drawSpotsFromGeoJson(geojson);
+                    drawSpotsFromGeoJson(geojson, currentClickedSpotID);
                     map.fitBounds(bbox, {
                         padding: {
                             top: 75,
