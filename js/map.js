@@ -6,7 +6,6 @@ function initMapControls() {
     map.addControl(new MapboxGeocoder({
         accessToken: mapboxgl.accessToken
     }), 'top-right');
-    map.addControl(new mapboxgl.FullscreenControl(), 'bottom-left');
     map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
     var scale = new mapboxgl.ScaleControl({
         maxWidth: 150,
