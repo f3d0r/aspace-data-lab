@@ -97,7 +97,7 @@ $("#view_spot_id").click(function () {
                     var geojson = getGeoJsonFromPoints(spot);
                     drawSpotsFromGeoJson(geojson, null);
                     map.flyTo({
-                        zoom: 20,
+                        zoom: mapbox.maxZoom,
                         center: [
                             spot[0].lng,
                             spot[0].lat,

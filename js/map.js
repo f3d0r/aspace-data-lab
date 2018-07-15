@@ -76,25 +76,44 @@ function splitToPoints(blockId, geojson) {
     var chunk = turf.lineChunk(geojson, aspace.sensor_delta_feet / mapbox.feet_in_mile, {
         units: 'miles'
     });
+    addSpots(toMidpointSqlInsert(chunk, blockId), function (response) {
+        if (response == "SUCCESS!") {
+            alertify.success("Block ID " + blockId + " added successfully. Go to normal mode to refresh.");
+        } else {
+            alertify.error("An error occurred attempting to add " + blockId + " to the database.");
+        }
+    });
+}
+
+function toMidpointSqlInsert(geojson, blockId) {
     var data = "[";
-    for (var index = 0; index < chunk.features.length; index++) {
-        var point1 = turf.point([chunk.features[index].geometry.coordinates[0][0], chunk.features[index].geometry.coordinates[0][1]]);
-        var point2 = turf.point([chunk.features[index].geometry.coordinates[1][0], chunk.features[index].geometry.coordinates[1][1]]);
+    for (var index = 0; index < geojson.features.length; index++) {
+        var point1 = turf.point([geojson.features[index].geometry.coordinates[0][0], geojson.features[index].geometry.coordinates[0][1]]);
+        var point2 = turf.point([geojson.features[index].geometry.coordinates[1][0], geojson.features[index].geometry.coordinates[1][1]]);
         currentMarker = turf.midpoint(point1, point2);
         data += "{\"lng\": \"" + currentMarker.geometry.coordinates[0] + "\", \"lat\": \"" + currentMarker.geometry.coordinates[1] + "\", \"block_id\" : \"" + blockId + "\"}"
-        if (index < chunk.features.length - 1) {
+        if (index < geojson.features.length - 1) {
             data += ", ";
         } else {
             data += "]";
         }
     }
-    addSpots(data, blockId, function (response) {
-        if (response == "SUCCESS!") { 
-            alertify.success("Block ID " + blockId + " added successfully. Go to normal mode to refresh.");
+    return data;
+}
+
+function toSqlInsert(geojson, blockId) {
+    var data = "[";
+    for (var index = 0; index < geojson.features.length; index++) {
+        var lng = geojson.features[index].geometry.coordinates[0];
+        var lat = geojson.features[index].geometry.coordinates[1];
+        data += "{\"lng\": \"" + lng + "\", \"lat\": \"" + lat + "\", \"block_id\" : \"" + blockId + "\"}"
+        if (index < geojson.features.length - 1) {
+            data += ", ";
         } else {
-            alertify.error("An error occured attempting to add " + blockId + " to the database.");
+            data += "]";
         }
-    });
+    }
+    return data;
 }
 
 function drawSpotsFromGeoJson(geojson, currentSpotIDPopup) {

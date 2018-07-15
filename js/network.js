@@ -91,11 +91,11 @@ function updateSpotStatus(spotId, newStatus, callback) {
     });
 }
 
-function addSpots(spotsJSON, blockID, callback) {
+function addSpots(spotsJSON, callback) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "https://api.trya.space/v1/parking/upload_spots?block_id=" + blockID + "&auth_key=" + aspace.auth_key,
+        "url": "https://api.trya.space/v1/parking/upload_spots?auth_key=" + aspace.auth_key,
         "method": "POST",
         "headers": {
             "content-type": "application/json"

@@ -214,4 +214,5 @@ input {
 
 .mapboxgl-ctrl-geocoder {
     top: 40px;
+    width: 285px;
 }

@@ -20,6 +20,7 @@ map.on('load', function () {
 });
 
 var currentDrawFeatures = null;
+var confirm = false;
 
 map.on('mousemove', function (e) {
     updateMouseLatLng(e);
@@ -40,9 +41,33 @@ map.on('click', function (e) {
                     function () {});
             }
         }
-    }
-    if (currentMode == MODE.API_TEST_BBOX) {
+    } else if (currentMode == MODE.API_TEST_BBOX) {
 
+    } else if (currentMode == MODE.CREATE_DATA_BY_SPOT) {
+        if (drawControl.getSelected().features.length > 0) {
+            if (confirm) {
+                confirm = false;
+                addSpots(toSqlInsert(drawControl.getSelected(), "-1"), function(response) {
+                    if (response == "SUCCESS!") {
+                        alertify.success("Spot ID successfully added. Go to normal mode to refresh.");
+                    } else {
+                        alertify.error("An error occurred attempting to add this spot to the database.");
+                    }
+                });
+                drawControl.deleteAll();
+            } else if (drawControl.getSelected().features.length == 1) {
+                alertify.message("Press again on this spot to upload it to the database.");
+                confirm = true;
+            }
+        } else if (drawControl.getSelected().features.length == 0) {
+            if (confirm) {
+                drawControl.deleteAll();
+                confirm = false;
+            } else {
+                alertify.message("Press away from this spot again to remove it from the map.");
+                confirm = true;
+            }
+        }
     }
 });
 
