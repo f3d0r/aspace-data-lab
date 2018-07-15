@@ -47,6 +47,7 @@ $("#theme_aspace").click(function () {
 
 $("#api_bbox").click(function () {
     changeMode('API_TEST_BBOX');
+    drawControl.changeMode('draw_polygon');
     clearMap();
 });
 
