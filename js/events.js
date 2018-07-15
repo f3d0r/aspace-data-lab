@@ -19,23 +19,39 @@ map.on('load', function () {
     alertify.success(strings.welcomeString);
 });
 
+var currentDrawFeatures = null;
+
 map.on('mousemove', function (e) {
     updateMouseLatLng(e);
 });
 
 map.on('click', function (e) {
-    console.log("MAP CLICKED!");
+    console.log(currentMode)
+    if (currentMode == MODE.CREATE_DATA_BY_STRIP) {
+        if (drawControl.getSelected().features.length > 0) {
+            if (drawControl.getSelected().features[0].geometry.coordinates.length > 2) {
+                alertify.error("You've selected more than two points. Press <a href=\"#\">here</a> to delete this line.");
+            } else if (drawControl.getSelected().features[0].geometry.coordinates.length == 2) {
+                alertify.prompt("Please enter a Block ID for this strip.", "Block ID",
+                    function (evt, value) {
+                        checkBlockIdExists(value, function (blockID) {
+                            splitToPoints(blockID, drawControl.getSelected());
+                        });
+                    },
+                    function () {});
+            }
+        }
+    }
     if (currentMode == MODE.API_TEST_BBOX) {
 
     }
 });
 
 map.on('zoomend', function (e) {
+    console.log(map.getZoom());
     if (currentMode == MODE.API_TEST_BBOX) {
 
     }
-    // console.log(map.getBounds());
-    // getBboxPoints(map.getBounds());
 });
 
 map.on('moveend', function (e) {
@@ -44,13 +60,41 @@ map.on('moveend', function (e) {
     }
 });
 
-map.on('draw.create', glDrawCreate);
-map.on('draw.update', glDrawUpdate)
+map.on('draw.create', function (e) {
+    if (currentMode == MODE.CREATE_DATA_BY_SPOT) {
 
-function glDrawCreate(e) {
+    } else if (currentMode == MODE.CREATE_DATA_BY_STRIP) {
+
+    } else if (currentMode == MODE.API_TEST_BBOX) {
+        bbox = glDrawBox(e);
+        getBboxPoints(bbox, function (spots) {
+            clearMap();
+            var geojson = getGeoJsonFromPoints(spots);
+            drawSpotsFromGeoJson(geojson);
+        });
+    }
+    currentDrawFeatures = drawControl.getAll();
+});
+
+map.on('draw.update', function (e) {
+    if (currentMode == MODE.CREATE_DATA_BY_SPOT) {
+
+    } else if (currentMode == MODE.CREATE_DATA_BY_STRIP) {
+
+    } else if (currentMode == MODE.API_TEST_BBOX) {
+        if (!checkBboxSame()) {
+            alertify.dismissAll();
+            alertify.message("Press <a onclick=\"glDrawUpdate();\" href=\"#\">here</a> to re-size the bounding box.");
+        } else {
+            glDrawUpdate();
+        }
+    }
+    currentDrawFeatures = drawControl.getAll();
+});
+
+function glDrawBox(e) {
     var data = drawControl.getAll();
     var bbox = turf.bbox(data);
-    // drawControl.deleteAll();
     drawControl.set({
         type: 'FeatureCollection',
         features: [{
@@ -79,9 +123,39 @@ function glDrawCreate(e) {
             right: 25
         }
     });
+    return {
+        _sw: {
+            lng: bbox[0],
+            lat: bbox[1]
+        },
+        _ne: {
+            lng: bbox[2],
+            lat: bbox[3]
+        }
+    }
 }
 
-function glDrawUpdate(e) {
-    alertify.dismissAll();
-    alertify.message("Press <a onclick=\"glDrawCreate();\" href=\"#\">here</a> to re-size the bounding box.");
+function glDrawUpdate() {
+    bbox = glDrawBox();
+    getBboxPoints(bbox, function (spots) {
+        clearMap();
+        var geojson = getGeoJsonFromPoints(spots);
+        drawSpotsFromGeoJson(geojson);
+    });
+}
+
+function checkBboxSame() {
+    var side1New = Math.abs(drawControl.getAll().features[0].geometry.coordinates[0][1][0] - drawControl.getAll().features[0].geometry.coordinates[0][0][0]);
+    var side1Old = Math.abs(currentDrawFeatures.features[0].geometry.coordinates[0][1][0] - currentDrawFeatures.features[0].geometry.coordinates[0][0][0]);
+
+    var side2New = Math.abs(drawControl.getAll().features[0].geometry.coordinates[0][2][1] - drawControl.getAll().features[0].geometry.coordinates[0][1][1]);
+    var side2Old = Math.abs(currentDrawFeatures.features[0].geometry.coordinates[0][2][1] - currentDrawFeatures.features[0].geometry.coordinates[0][1][1]);
+
+    var side3New = Math.abs(drawControl.getAll().features[0].geometry.coordinates[0][3][0] - drawControl.getAll().features[0].geometry.coordinates[0][2][0]);
+    var side3Old = Math.abs(currentDrawFeatures.features[0].geometry.coordinates[0][3][0] - currentDrawFeatures.features[0].geometry.coordinates[0][2][0]);
+
+    var side4New = Math.abs(drawControl.getAll().features[0].geometry.coordinates[0][4][1] - drawControl.getAll().features[0].geometry.coordinates[0][3][1]);
+    var side4Old = Math.abs(currentDrawFeatures.features[0].geometry.coordinates[0][4][1] - currentDrawFeatures.features[0].geometry.coordinates[0][3][1]);
+
+    return side1New == side1Old && side2New == side2Old && side3New == side3Old && side4New == side4Old;
 }

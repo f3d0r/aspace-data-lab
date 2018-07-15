@@ -48,10 +48,6 @@ $("#theme_aspace").click(function () {
 $("#api_bbox").click(function () {
     changeMode('API_TEST_BBOX');
     clearMap();
-    // getBboxPoints(map.getBounds(), function (spots) {
-    //     var geojson = getGeoJsonFromPoints(spots);
-    //     drawSpotsFromGeoJson(geojson);
-    // });
 });
 
 $("#api_radius").click(function () {
@@ -101,7 +97,7 @@ $("#view_spot_id").click(function () {
                     var geojson = getGeoJsonFromPoints(spot);
                     drawSpotsFromGeoJson(geojson, null);
                     map.flyTo({
-                        zoom: 18,
+                        zoom: 20,
                         center: [
                             spot[0].lng,
                             spot[0].lat,
@@ -141,8 +137,10 @@ $("#view_block_id").click(function () {
 
 $("#create_individual_spot").click(function () {
     changeMode('CREATE_DATA_BY_SPOT');
+    drawControl.changeMode('draw_point');
 });
 
 $("#create_spot_strip").click(function () {
     changeMode('CREATE_DATA_BY_STRIP');
+    drawControl.changeMode('draw_line_string');
 });

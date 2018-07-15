@@ -3,7 +3,7 @@ var mapbox = {
     access_token: 'pk.eyJ1IjoiYXNwYWNlLWluYyIsImEiOiJjamozNzlyZXgwdGIwM3dwY3h5bG01NXZoIn0._0LSy_8uB6ucL5NmXTSTtA',
     default_zoomin: [-122.32076559745069, 47.61561766959997],
     zoom: 16,
-    maxZoom: 18,
+    maxZoom: 22,
     minZoom: 12,
     feet_in_mile: 5280,
     theme_default: '***REMOVED***',

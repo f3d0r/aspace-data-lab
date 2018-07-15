@@ -81,9 +81,27 @@ function updateSpotStatus(spotId, newStatus, callback) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://api.trya.space/v1/parking/update_status?auth_key=" + aspace.auth_key + "&spot_id=" + spotId + "&occupied=" + newStatus,
+        "url": "https://api.trya.space/v1/parking/update_status?auth_key=" + aspace.auth_key + "&spot_id=" + spotId + "&occupied=" + newStatus,
         "method": "POST",
         "headers": {}
+    }
+
+    $.ajax(settings).done(function (response) {
+        callback(response);
+    });
+}
+
+function addSpots(spotsJSON, blockID, callback) {
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://api.trya.space/v1/parking/upload_spots?block_id=" + blockID + "&auth_key=" + aspace.auth_key,
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "processData": false,
+        "data": spotsJSON
     }
 
     $.ajax(settings).done(function (response) {

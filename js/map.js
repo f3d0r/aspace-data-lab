@@ -72,13 +72,8 @@ function toggleDrawTools(displayed) {
     }
 }
 
-function splitToPoints(blockId) {
-    // var line = turf.lineString([
-    //     [firstMarker.getLngLat().lng, firstMarker.getLngLat().lat],
-    //     [secondMarker.getLngLat().lng, secondMarker.getLngLat().lat]
-    // ]);
-
-    var chunk = turf.lineChunk(line, aspace.sensor_delta_feet / mapbox.feet_in_mile, {
+function splitToPoints(blockId, geojson) {
+    var chunk = turf.lineChunk(geojson, aspace.sensor_delta_feet / mapbox.feet_in_mile, {
         units: 'miles'
     });
     var data = "[";
@@ -86,14 +81,16 @@ function splitToPoints(blockId) {
         var point1 = turf.point([chunk.features[index].geometry.coordinates[0][0], chunk.features[index].geometry.coordinates[0][1]]);
         var point2 = turf.point([chunk.features[index].geometry.coordinates[1][0], chunk.features[index].geometry.coordinates[1][1]]);
         currentMarker = turf.midpoint(point1, point2);
-        data += "{ \"lng\": \"" + currentMarker.geometry.coordinates[0] + "\", \"lat\": \"" + currentMarker.geometry.coordinates[1] + "\", \"block_id\" : \"" + blockId + "\"}"
+        data += "{\"lng\": \"" + currentMarker.geometry.coordinates[0] + "\", \"lat\": \"" + currentMarker.geometry.coordinates[1] + "\", \"block_id\" : \"" + blockId + "\"}"
         if (index < chunk.features.length - 1) {
             data += ", ";
         } else {
             data += "]";
         }
     }
-    uploadStrip(data, blockId);
+    addSpots(data, blockId, function (response) {
+        console.log(response);
+    });
 }
 
 function drawSpotsFromGeoJson(geojson, currentSpotIDPopup) {
@@ -132,7 +129,7 @@ function drawSpotsFromGeoJson(geojson, currentSpotIDPopup) {
         el.addEventListener('click', () => {
             currentClickedSpotID = currentSpot.properties.spot_id;
             map.flyTo({
-                zoom: 18,
+                zoom: 22,
                 center: [
                     currentSpot.properties.lng,
                     currentSpot.properties.lat,
@@ -217,5 +214,5 @@ function updateMouseLatLng(e) {
     var lat = e.lngLat.lat + "";
     lng = lng.substring(0, lng.indexOf('.') + 5);
     lat = lat.substring(0, lat.indexOf('.') + 5);
-    legend.innerHTML = "Mouse Lng/Lat: (" + lng + ", " + lat + ")";
+    legend.innerHTML = "Lng/Lat: (" + lng + ", " + lat + ")";
 }

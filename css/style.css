@@ -154,7 +154,7 @@ input {
 .legend {
     background-color: #fff;
     border-radius: 3px;
-    top: 110px;
+    top: 55px;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     padding: 10px;
     position: absolute;
@@ -166,11 +166,11 @@ input {
 .mode {
     background-color: #fff;
     border-radius: 3px;
-    top: 155px;
+    top: 55px;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     padding: 10px;
     position: absolute;
-    right: 10px;
+    right: 200px;
     z-index: 1;
     font-size: 12px;
 }
@@ -210,4 +210,8 @@ input {
 .mapboxgl-popup-content {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
+}
+
+.mapboxgl-ctrl-geocoder {
+    top: 40px;
 }
