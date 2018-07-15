@@ -89,7 +89,11 @@ function splitToPoints(blockId, geojson) {
         }
     }
     addSpots(data, blockId, function (response) {
-        console.log(response);
+        if (response == "SUCCESS!") { 
+            alertify.success("Block ID " + blockId + " added successfully. Go to normal mode to refresh.");
+        } else {
+            alertify.error("An error occured attempting to add " + blockId + " to the database.");
+        }
     });
 }
 

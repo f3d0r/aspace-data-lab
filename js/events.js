@@ -26,7 +26,6 @@ map.on('mousemove', function (e) {
 });
 
 map.on('click', function (e) {
-    console.log(currentMode)
     if (currentMode == MODE.CREATE_DATA_BY_STRIP) {
         if (drawControl.getSelected().features.length > 0) {
             if (drawControl.getSelected().features[0].geometry.coordinates.length > 2) {
@@ -48,7 +47,6 @@ map.on('click', function (e) {
 });
 
 map.on('zoomend', function (e) {
-    console.log(map.getZoom());
     if (currentMode == MODE.API_TEST_BBOX) {
 
     }
