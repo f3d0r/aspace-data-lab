@@ -168,8 +168,8 @@ function inputTextChange(spot_id, newText) {
 }
 
 function switchSpotStatus(spotId, newStatus) {
-    updateSpotStatus(spotId, newStatus, function (response) {
-        if (response.error.error_code != 19) {
+    updateSpotStatus(spotId, newStatus, function (responseCode) {
+        if (responseCode != 19) {
             alertify.error('The spot status could not be changed.');
         } else {
             alertify.success('Spot ID ' + spotId + " status changed to '" + newStatus + "'.");

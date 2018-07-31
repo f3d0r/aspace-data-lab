@@ -47,7 +47,7 @@ map.on('click', function (e) {
         if (drawControl.getSelected().features.length > 0) {
             if (confirm) {
                 confirm = false;
-                addSpots(toSqlInsert(drawControl.getSelected(), "-1"), function(response) {
+                addSpots(toSqlInsert(drawControl.getSelected(), "-1"), function (response) {
                     if (response == "SUCCESS!") {
                         alertify.success("Spot ID successfully added. Go to normal mode to refresh.");
                     } else {

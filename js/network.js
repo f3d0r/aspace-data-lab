@@ -8,7 +8,7 @@ function checkBlockIdExists(blockId, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        if (response == "T") {
+        if (response.res_content == "T") {
             alertify.error("The block_id you entered already exists");
         } else {
             callback(blockId);
@@ -34,7 +34,7 @@ function getBboxPoints(boundingBox, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        callback(response);
+        callback(response.res_content);
     });
 }
 
@@ -57,7 +57,7 @@ function getRadiusPoints(originLatLng, radius_feet, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        callback(response);
+        callback(response.res_content);
     });
 }
 
@@ -73,7 +73,7 @@ function getSpotsbyID(searchType, searchValue, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        callback(response);
+        callback(response.res_content);
     });
 }
 
@@ -87,7 +87,7 @@ function updateSpotStatus(spotId, newStatus, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        callback(response);
+        callback(response.res_info.code);
     });
 }
 
@@ -105,6 +105,6 @@ function addSpots(spotsJSON, callback) {
     }
 
     $.ajax(settings).done(function (response) {
-        callback(response);
+        callback(response.res_content);
     });
 }

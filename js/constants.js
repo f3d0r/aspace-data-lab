@@ -1,14 +1,15 @@
 // MAPBOX CONSTANTS
 var mapbox = {
-    access_token: 'pk.eyJ1IjoiYXNwYWNlLWluYyIsImEiOiJjamozNzlyZXgwdGIwM3dwY3h5bG01NXZoIn0._0LSy_8uB6ucL5NmXTSTtA',
+    access_token: '***REMOVED***',
     default_zoomin: [-122.32076559745069, 47.61561766959997],
     zoom: 16,
     maxZoom: 19,
     minZoom: 12,
     feet_in_mile: 5280,
     theme_default: '***REMOVED***',
-    theme_satellite: 'mapbox://styles/aspace-inc/cjjdqm85g5idu2qlm4xf3spl9',
-    theme_aspace: 'mapbox://styles/aspace-inc/cjjkql9uz1id22smd44edtmpv'
+    theme_satellite: '***REMOVED***',
+    theme_satellite_w_streets: '***REMOVED***',
+    theme_aspace: '***REMOVED***'
 };
 
 // ASPACE CONSTANTS
