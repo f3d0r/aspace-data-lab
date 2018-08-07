@@ -24,7 +24,7 @@ function getBboxPoints(boundingBox, callback) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "https://api.trya.space/v1/parking/get_status_bbox",
+        "url": "https://api.trya.space/v1/parking/get_status_bbox/json",
         "method": "POST",
         "headers": {
             "content-type": "application/json"
@@ -47,7 +47,7 @@ function getRadiusPoints(originLatLng, radius_feet, callback) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "https://api.trya.space/v1/parking/get_status_radius?radius_feet=" + radius_feet,
+        "url": "https://api.trya.space/v1/parking/get_status_radius/json?radius_feet=" + radius_feet,
         "method": "POST",
         "headers": {
             "content-type": "application/json"
@@ -65,7 +65,7 @@ function getSpotsbyID(searchType, searchValue, callback) {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "https://api.trya.space/v1/parking/get_status?" + searchType + "=" + searchValue,
+        "url": "https://api.trya.space/v1/parking/get_status/json?" + searchType + "=" + searchValue,
         "method": "GET",
         "headers": {
             "content-type": "application/json"
