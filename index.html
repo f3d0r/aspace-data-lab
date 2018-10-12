@@ -4,85 +4,104 @@
 
 <head>
 
-  <title>aspace, Inc. - Data Lab</title>
-  <link rel="shortcut icon" type="image/png" href="assets/favicon.png" />
+    <title>aspace, Inc. - Data Lab</title>
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png" />
 
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.css'
+        type='text/css' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/alertify.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/themes/default.min.css">
 
-  <link href='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css' rel='stylesheet' />
-  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.css' type='text/css'
-  />
-  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css'
-    type='text/css' />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link rel="stylesheet" type="text/css" href="css/alertify.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/themes/default.min.css">
-
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript" src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-  <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
-  <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
-  <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.js'></script>
-  <script type="text/javascript" src='https://npmcdn.com/mapbox-gl-circle/dist/mapbox-gl-circle.min.js'></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js'></script>
+    <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
+    <script type="text/javascript" src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.4/mapbox-gl-draw.js'></script>
+    <script type="text/javascript" src='https://npmcdn.com/mapbox-gl-circle/dist/mapbox-gl-circle.min.js'></script>
 </head>
 
 <body>
 
-  <div id='legend' class='legend'>Loading...</div>
-  <div id='mode' class='mode'>Loading...</div>
+    <div id='legend' class='legend'>Loading...</div>
+    <div id='mode' class='mode'>Loading...</div>
 
-  <div id='map' class='map'> </div>
+    <div id='map' class='map'> </div>
 
-  <div class="navbar">
-    <a href="https://lab.trya.space">Home</a>
-    <div class="dropdown">
-      <button class="dropbtn">Mode
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="#" id="view_normal">Normal</a>
-        <a href="#" id="view_live_feed">Live Feed</a>
-        <a href="#" id="view_spot_id">Single Spot</a>
-        <a href="#" id="view_block_id">Single Block</a>
-      </div>
+    <div class="navbar">
+        <a href="https://lab.trya.space">Home</a>
+        <div class="dropdown">
+            <button class="dropbtn">Mode
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" id="view_normal">Normal</a>
+                <a href="#" id="view_live_feed">Live Feed</a>
+                <a href="#" id="view_spot_id">Single Spot</a>
+                <a href="#" id="view_block_id">Single Block</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Theme
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" id="theme_default">Default</a>
+                <a href="#" id="theme_satellite">Satellite</a>
+                <a href="#" id="theme_satellite_w_streets">Satellite w/ Streets</a>
+                <a href="#" id="theme_aspace">ASPACE!</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">API Test
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="# " id="api_bbox">Bounding Box</a>
+                <a href="# " id="api_radius">Radius</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Create Data
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" id="create_individual_spot">Create Individual Spot</a>
+                <a href="#" id="create_spot_strip">Create Spot Strip</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Routing - Prod
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" onClick="createRoute(false, 'drive_direct');">Park-Direct</a>
+                <a href="#" onClick="createRoute(false, 'park_walk');">Park-Walk</a>
+                <a href="#" onClick="createRoute(false, 'park_bike');">Park-Bike</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Routing - Dev
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#" onClick="createRoute(true, 'drive_direct');">Park-Direct</a>
+                <a href="#" onClick="createRoute(true, 'park_walk');">Park-Walk</a>
+                <a href="#" onClick="createRoute(true, 'park_bike');">Park-Bike</a>
+            </div>
+        </div>
     </div>
-    <div class="dropdown">
-      <button class="dropbtn">Theme
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="#" id="theme_default">Default</a>
-        <a href="#" id="theme_satellite">Satellite</a>
-        <a href="#" id="theme_satellite_w_streets">Satellite w/ Streets</a>
-        <a href="#" id="theme_aspace">ASPACE!</a>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn">API Test
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="# " id="api_bbox">Bounding Box</a>
-        <a href="# " id="api_radius">Radius</a>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn">Create Data
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="#" id="create_individual_spot">Create Individual Spot</a>
-        <a href="#" id="create_spot_strip">Create Spot Strip</a>
-      </div>
-    </div>
-  </div>
-
 </body>
 
-<script type="text/javascript " src="js/constants.js "></script>
-<script type="text/javascript " src="js/events.js "></script>
-<script type="text/javascript " src="js/network.js "></script>
-<script type="text/javascript " src="js/map.js "></script>
-<script type="text/javascript " src="js/control.js "></script>
-<script type="text/javascript " src="js/alertify.min.js "></script>
+<script type="text/javascript" src="js/constants.js "></script>
+<script type="text/javascript" src="js/events.js "></script>
+<script type="text/javascript" src="js/network.js "></script>
+<script type="text/javascript" src="js/map.js "></script>
+<script type="text/javascript" src="js/control.js "></script>
+<script type="text/javascript" src="js/alertify.min.js "></script>
+<script type="text/javascript" src="js/misc.js"></script>
 
 </html>

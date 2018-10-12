@@ -120,7 +120,6 @@ $("#view_block_id").click(function () {
     alertify.prompt("Please enter the Block ID you would like to view.", "Block ID",
         function (evt, value) {
             getSpotsbyID('block_id', value, function (spots) {
-                console.log(spots)
                 if (spots.length == 0) {
                     alertify.error('Invalid Block ID');
                 } else {

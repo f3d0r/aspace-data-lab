@@ -22,6 +22,9 @@ map.on('load', function () {
 var currentDrawFeatures = null;
 var confirm = false;
 
+var currentRouteType = null;
+var currentRouteDebugging = null;
+
 map.on('mousemove', function (e) {
     updateMouseLatLng(e);
 });
@@ -67,6 +70,41 @@ map.on('click', function (e) {
                 alertify.message("Press away from this spot again to remove it from the map.");
                 confirm = true;
             }
+        }
+    } else if (currentMode == MODE.API_ROUTING_PROD || currentMode == MODE.API_ROUTING_DEV) {
+        if (drawControl.getAll().features.length < 2) {
+            drawControl.changeMode('draw_point');
+        } else {
+            var latLngs = [];
+            for (var index = 0; index < drawControl.getAll().features.length; index++) {
+                if (index == 0) {
+                    popupString = "<h2>Origin</h2>";
+                } else {
+                    popupString = "<h2>Destination</h2>";
+                }
+                lng = decimalCutoff(drawControl.getAll().features[index].geometry.coordinates[0], 5);
+                lat = decimalCutoff(drawControl.getAll().features[index].geometry.coordinates[1], 5)
+                latLngs.push([lng, lat]);
+                popupString += "[" + lng + ", " + lat + "]";
+
+                var popup = new mapboxgl.Popup({
+                        offset: 25
+                    })
+                    .setHTML(popupString);
+
+                var currentMarker = new mapboxgl.Marker()
+                    .setLngLat(drawControl.getAll().features[index].geometry.coordinates)
+                    .setPopup(popup)
+                    .addTo(map);
+
+            }
+            changeMode('PREVIEW_ROUTE');
+            toggleDrawTools(false);
+            getRoute(latLngs[0][0], latLngs[0][1], latLngs[1][0], latLngs[1][1], currentRouteType, currentRouteDebugging, function (routes) {
+                drawRoute(routes[0].map(val => val.directions.routes[0].geometry));
+                drawPoints(routes[0].map(val => val.dest));
+                drawPoints(routes[0].map(val => val.origin));
+            });
         }
     }
 });
@@ -181,4 +219,75 @@ function checkBboxSame() {
     var side4Old = Math.abs(currentDrawFeatures.features[0].geometry.coordinates[0][4][1] - currentDrawFeatures.features[0].geometry.coordinates[0][3][1]);
 
     return side1New == side1Old && side2New == side2Old && side3New == side3Old && side4New == side4Old;
+}
+
+function createRoute(isDebug, routeType) {
+    currentRouteDebugging = isDebug;
+    currentRouteType = routeType;
+    toggleDrawTools(true, ['point']);
+    drawControl.changeMode('draw_point');
+    if (isDebug) {
+        changeMode('API_ROUTING_DEV')
+    } else {
+        changeMode('API_ROUTING_PROD')
+    }
+}
+
+function drawRoute(routeGeometries) {
+    var index = 0;
+    routeGeometries.forEach(function (currentGeometry) {
+        map.addLayer({
+            "id": Math.floor(Math.random() * 1000) + "-route-" + index,
+            "type": "line",
+            "source": {
+                "type": "geojson",
+                "data": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": currentGeometry
+                }
+            },
+            "layout": {
+                "line-join": "round",
+                "line-cap": "round"
+            },
+            "paint": {
+                "line-color": "#888",
+                "line-width": 4
+            }
+        });
+        index++;
+    });
+}
+
+function drawPoints(points) {
+    points.forEach(function (currentPoint) {
+        lng = decimalCutoff(currentPoint.lng, 5);
+        lat = decimalCutoff(currentPoint.lat, 5);
+
+        if (typeof currentPoint.meta != 'undefined' && typeof currentPoint.meta.type != 'undefined') {
+            popupHTML = "<h2>" + currentPoint.meta.type + "</h2>";
+            popupHTML += "<h3>[" + lng + ", " + lat + "]</h3>";
+
+            if (currentPoint.meta.type == "bike") {
+                popupHTML += "<h3>ID: " + currentPoint.meta.id + "</h3>";
+                popupHTML += "<h3>Company: " + currentPoint.meta.company + "</h3>";
+                popupHTML += "<h3>Bike Num: " + currentPoint.meta.num + "</h3>";
+            } else if (currentPoint.meta.type == "parking") {
+                popupHTML += "<h3>Index: " + currentPoint.meta.id + "</h3>";
+                popupHTML += "<h3>Name: " + currentPoint.meta.name + "</h3>";
+                popupHTML += "<h3>Parking Price: $" + currentPoint.meta.parking_price + "</h3>";
+
+            }
+            var popup = new mapboxgl.Popup({
+                    offset: 25
+                })
+                .setHTML(popupHTML);
+
+            var currentMarker = new mapboxgl.Marker()
+                .setLngLat([currentPoint.lng, currentPoint.lat])
+                .setPopup(popup)
+                .addTo(map);
+        }
+    });
 }

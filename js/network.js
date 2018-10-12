@@ -108,3 +108,36 @@ function addSpots(spotsJSON, callback) {
         callback(response.res_content);
     });
 }
+
+function getRoute(originLng, originLat, destLng, destLat, routeType, debugging, callback) {
+    console.log(getRouteBaseURL(debugging) + getRouteExtension(routeType) + "?origin_lat=" + originLat + "&origin_lng=" + originLng + "&dest_lat=" + destLat + "&dest_lng=" + destLng + "&session_starting=0&access_code=null&device_id=null");
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": getRouteBaseURL(debugging) + getRouteExtension(routeType) + "?origin_lat=" + originLat + "&origin_lng=" + originLng + "&dest_lat=" + destLat + "&dest_lng=" + destLng + "&session_starting=0&access_code=null&device_id=null",
+        "method": "POST",
+        "processData": false,
+    }
+
+    $.ajax(settings).done(function (response) {
+        callback(response.res_content.routes);
+    });
+}
+
+function getRouteExtension(routeType) {
+    if (routeType == "drive_direct") {
+        return "get_drive_direct_route/";
+    } else if (routeType == "park_bike") {
+        return "get_drive_bike_route/";
+    } else {
+        return "get_drive_walk_route/";
+    }
+}
+
+function getRouteBaseURL(debugging) {
+    if (debugging) {
+        return "https://routing-dev.trya.space/v1/";
+    } else {
+        return "https://routing.trya.space/v1/";
+    }
+}

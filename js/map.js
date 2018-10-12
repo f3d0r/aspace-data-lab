@@ -23,7 +23,8 @@ function initMapControls() {
         default_mode: 'draw_polygon',
         controls: {
             polygon: true,
-            trash: true
+            trash: true,
+            userProperties: true
         }
     });
 }
@@ -64,9 +65,36 @@ function toggleSearch(enabled) {
     }
 }
 
-function toggleDrawTools(displayed) {
+function toggleDrawTools(displayed, displayedControls) {
     if (displayed) {
-        map.addControl(drawControl, 'bottom-left');
+        options = {
+            'trash': true
+        }
+        if (typeof displayedControls != 'undefined' && displayedControls != null && displayedControls.length > 0) {
+            displayedControls.forEach(function (current) {
+                options[current] = true
+            });
+            try {
+                map.removeControl(drawControl);
+                drawControl = new MapboxDraw({
+                    displayControlsDefault: false,
+                    default_mode: 'draw_polygon',
+                    userProperties: true,
+                    controls: options
+                });
+            } catch (e) {
+                drawControl = new MapboxDraw({
+                    displayControlsDefault: false,
+                    default_mode: 'draw_polygon',
+                    controls: {
+                        polygon: true,
+                        trash: true,
+                        userProperties: true
+                    }
+                });
+                map.addControl(drawControl, 'bottom-left');
+            }
+        }
     } else {
         map.removeControl(drawControl);
     }
@@ -214,7 +242,7 @@ function changeMode(newMode) {
     }
 
     if (newMode == 'CREATE_DATA_BY_SPOT' || newMode == 'CREATE_DATA_BY_STRIP' || newMode == 'API_TEST_BBOX') {
-        toggleDrawTools(true);
+        toggleDrawTools(true, ['polygon']);
     }
 
     currentMode = MODE[newMode];
@@ -233,9 +261,7 @@ function refreshData() {
 }
 
 function updateMouseLatLng(e) {
-    var lng = e.lngLat.lng + "";
-    var lat = e.lngLat.lat + "";
-    lng = lng.substring(0, lng.indexOf('.') + 5);
-    lat = lat.substring(0, lat.indexOf('.') + 5);
+    var lng = decimalCutoff(e.lngLat.lng, 5);
+    var lat = decimalCutoff(e.lngLat.lat, 5);
     legend.innerHTML = "Lng/Lat: (" + lng + ", " + lat + ")";
 }
