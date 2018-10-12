@@ -110,7 +110,6 @@ function addSpots(spotsJSON, callback) {
 }
 
 function getRoute(originLng, originLat, destLng, destLat, routeType, debugging, callback) {
-    console.log(getRouteBaseURL(debugging) + getRouteExtension(routeType) + "?origin_lat=" + originLat + "&origin_lng=" + originLng + "&dest_lat=" + destLat + "&dest_lng=" + destLng + "&session_starting=0&access_code=null&device_id=null");
     var settings = {
         "async": true,
         "crossDomain": true,
